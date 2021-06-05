@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dbtechprojects.JukeBoxCompose.ui.AlbumList
 import com.dbtechprojects.JukeBoxCompose.ui.TurnTableDrawable
 import com.dbtechprojects.JukeBoxCompose.ui.theme.MyApplicationTheme
 import com.dbtechprojects.JukeBoxCompose.ui.theme.appBackground
@@ -104,6 +105,7 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
 
             "play" -> {
                 isPlaying.value = !isPlaying.value
+                currentSong.value.isPlaying = !isPlaying.value
                 currentSongIndex.value = currentSong.value.index
             }
         }
@@ -123,7 +125,7 @@ fun MainContent(
 ) {
     Column {
         Title()
-        AlbumList(onAlbumClick, listState,currentSongIndex)
+        AlbumList(onAlbumClick, listState,currentSongIndex, R.drawable.ic_baseline_pause_24)
         TurnTable(isPlaying)
         Player(album, isPlaying, listState, onMusicPlayerClick )
     }
@@ -221,87 +223,6 @@ fun Player(
     }
 }
 
-@Composable
-fun AlbumList(onClick: OnAlbumClick, listState: LazyListState, playingSongIndex: MutableState<Int>) {
-
-    val albums = remember { AlbumRepository.getAlbums() }
-    // create AlbumRow
-
-    LazyRow(contentPadding = PaddingValues(16.dp), state = listState) {
-        items(
-            items = albums,
-            itemContent = {
-                AlbumListItem(album = it, onClick, playingSongIndex)
-            })
-    }
-}
-
-@Composable
-fun AlbumListItem(album: Album, onClick: OnAlbumClick, playingSongIndex: MutableState<Int>) {
-    Row {
-        Column {
-            Box(Modifier.padding(6.dp)) {
-
-                Image(
-                    painter = painterResource(id = album.img),
-                    contentDescription = "album image",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(RoundedCornerShape(corner = CornerSize(32.dp)))
-                        .clickable(true, onClick = { onClick.albumclick(album) }),
-                )
-
-                if (playingSongIndex.value == album.index){
-                    TestRoundedBox(shape = RoundedCornerShape(32.dp) , color = Color.Gray.copy(alpha = 0.6f), size = 120.dp)
-                }
-
-            }
-        }
-    }
-}
-
-@Composable
-fun AlbumListItemOverlay(){
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .wrapContentSize(Alignment.Center)) {
-        Box(
-            modifier = Modifier
-                .background(color = Color.Gray.copy(alpha = 0.6f))
-                .size(120.dp)
-                .clip(RoundedCornerShape(32.dp))
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_baseline_pause_24),
-                contentDescription = "Album Play indicator",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-
-
-}
-
-@Composable
-fun TestRoundedBox(shape: Shape, color: Color, size: Dp){
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .wrapContentSize(Alignment.Center)) {
-        Box(
-            modifier = Modifier
-                .size(size)
-                .clip(shape)
-                .background(color)
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.ic_baseline_pause_24),
-                contentDescription = "Album Play indicator",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-
 
 @Composable
 fun TurnTable(isPlaying: MutableState<Boolean>) {
@@ -323,14 +244,6 @@ fun TurnTable(isPlaying: MutableState<Boolean>) {
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-    }
-}
-
 // onAlbumClickInterFace
 
 interface OnAlbumClick {
