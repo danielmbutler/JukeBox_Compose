@@ -17,12 +17,13 @@ object AlbumRepository {
         )
 
         for(i in drawableList){
-            albumlist.add(Album(i, drawableList.indexOf(i).toString() + "Song Title", drawableList.indexOf(i), false))
+            albumlist.add(Album(i, (drawableList.indexOf(i)).toString() + "Song Title", drawableList.indexOf(i), false))
         }
 
         return albumlist
     }
 }
+
 
 data class Album(
     val img: Int,

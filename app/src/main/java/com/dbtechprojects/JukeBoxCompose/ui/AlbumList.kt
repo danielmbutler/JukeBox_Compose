@@ -1,5 +1,6 @@
 package com.dbtechprojects.JukeBoxCompose.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +26,13 @@ import com.dbtechprojects.JukeBoxCompose.AlbumRepository
 import com.dbtechprojects.JukeBoxCompose.OnAlbumClick
 
 @Composable
-fun AlbumList(onClick: OnAlbumClick, listState: LazyListState, playingSongIndex: MutableState<Int>, overlayIcon: Int) {
+fun AlbumList(
+    isPlaying: MutableState<Boolean>,
+    onClick: OnAlbumClick,
+    listState: LazyListState,
+    playingSongIndex: MutableState<Int>,
+    overlayIcon: Int
+) {
 
     val albums = remember { AlbumRepository.getAlbums() }
     // create AlbumRow
@@ -34,13 +41,13 @@ fun AlbumList(onClick: OnAlbumClick, listState: LazyListState, playingSongIndex:
         items(
             items = albums,
             itemContent = {
-                AlbumListItem(album = it, onClick, playingSongIndex, overlayIcon)
+                AlbumListItem(album = it, onClick, playingSongIndex, isPlaying, overlayIcon)
             })
     }
 }
 
 @Composable
-fun AlbumListItem(album: Album, onClick: OnAlbumClick, playingSongIndex: MutableState<Int>, overlayIcon: Int) {
+fun AlbumListItem(album: Album, onClick: OnAlbumClick, playingSongIndex: MutableState<Int>, isPlaying: MutableState<Boolean>, overlayIcon: Int) {
     Row {
         Column {
             Box(Modifier.padding(6.dp)) {
@@ -53,8 +60,9 @@ fun AlbumListItem(album: Album, onClick: OnAlbumClick, playingSongIndex: Mutable
                         .clip(RoundedCornerShape(corner = CornerSize(32.dp)))
                         .clickable(true, onClick = { onClick.albumclick(album) }),
                 )
+                Log.d("TAG", "AlbumListItem:${playingSongIndex.value} ${album.index} ")
 
-                if (playingSongIndex.value == album.index){
+                if (playingSongIndex.value == album.index && isPlaying.value){
                     AlbumOverlayRoundedBox(
                         shape = RoundedCornerShape(32.dp) ,
                         color = Color.Gray.copy(alpha = 0.6f),
