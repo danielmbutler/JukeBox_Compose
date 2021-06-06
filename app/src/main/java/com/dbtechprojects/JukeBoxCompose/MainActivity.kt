@@ -38,8 +38,9 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
     private val trackList = AlbumRepository.getAlbums() // retrieve song list
     private val currentSong = mutableStateOf(trackList[0]) // currently playing song
     private val currentSongIndex = mutableStateOf(-1) // used for recyclerview playing overlay
-    lateinit var listState: LazyListState
-    lateinit var coroutineScope: CoroutineScope
+    private val turntableArmState  = mutableStateOf(false)// turns turntable arm
+    private lateinit var listState: LazyListState // current state of album list
+    private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +61,8 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
                         currentSong,
                         listState,
                         onMusicPlayerClick = this,
-                        currentSongIndex
+                        currentSongIndex,
+                        turntableArmState
                     )
                     Log.d(TAG, "onCreate: TrackList : $trackList")
                 }
@@ -128,13 +130,16 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
             "play" -> {
                 isPlaying.value = !isPlaying.value // confirms if we are in playing or paused mode
                 currentSong.value.isPlaying = !isPlaying.value // confirms whether current song is played or paused
-                currentSongIndex.value = currentSong.value.index //
+                currentSongIndex.value = currentSong.value.index //confirms current song Index
+                turntableArmState.value = ! turntableArmState.value // moves turntable Arm Accordingly
             }
         }
 
     }
 }
 
+
+//UI
 
 @Composable
 fun MainContent(
@@ -143,12 +148,13 @@ fun MainContent(
     album: MutableState<Album>,
     listState: LazyListState,
     onMusicPlayerClick: onMusicPlayerClick,
-    currentSongIndex: MutableState<Int>
+    currentSongIndex: MutableState<Int>,
+    turntableArmState: MutableState<Boolean>
 ) {
     Column {
         Title()
         AlbumList(isPlaying,onAlbumClick, listState,currentSongIndex, R.drawable.ic_baseline_pause_24)
-        TurnTable(isPlaying)
+        TurnTable(isPlaying, turntableArmState)
         Player(album, isPlaying, listState, onMusicPlayerClick )
     }
 }
@@ -157,7 +163,7 @@ fun MainContent(
 fun Title() {
     Column(
         modifier = Modifier
-            .padding(30.dp)
+            .padding(15.dp)
             .fillMaxWidth()
 
     ) {
@@ -247,7 +253,7 @@ fun Player(
 
 
 @Composable
-fun TurnTable(isPlaying: MutableState<Boolean>) {
+fun TurnTable(isPlaying: MutableState<Boolean>, turntableArmState: MutableState<Boolean>) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -260,9 +266,9 @@ fun TurnTable(isPlaying: MutableState<Boolean>) {
             color = turntableBackground,
             size = 240.dp,
             turntableDrawable = R.drawable.record,
-            armDrawable = R.drawable.tone_arm_only,
-            armLockDrawable = R.drawable.arm_lock,
-            isPlaying = isPlaying
+            isPlaying = isPlaying,
+            turntableArmState
+
         )
     }
 }
