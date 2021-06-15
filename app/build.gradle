@@ -63,4 +63,8 @@ dependencies {
 
     // constraint layout for compose
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07"
+
+    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation("androidx.compose.foundation:foundation:1.0.0-beta08")
+
 }

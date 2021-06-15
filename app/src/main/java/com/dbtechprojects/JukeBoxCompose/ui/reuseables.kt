@@ -1,6 +1,7 @@
 package com.dbtechprojects.JukeBoxCompose.ui
 
 
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -10,31 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.ConstraintLayoutBaseScope
-
-
-@Composable
-fun RoundedBox(shape: Shape, color: Color, size: Dp) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(size)
-                .clip(shape)
-                .background(color)
-        )
-    }
-}
 
 
 @Composable
@@ -45,6 +29,7 @@ fun TurnTableDrawable(
     turntableDrawable: Int,
     isPlaying: MutableState<Boolean>,
     turntableArmState: MutableState<Boolean>,
+    isTurntableArmFinished: MutableState<Boolean>
 ) {
 
     val playingState = remember { isPlaying }
@@ -56,6 +41,7 @@ fun TurnTableDrawable(
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
     ) {
+
         Box(
             modifier = Modifier
                 .size(size)
@@ -64,8 +50,7 @@ fun TurnTableDrawable(
                 .padding(0.dp)
         ) {
 
-            // animation variables
-            val isTurntableArmFinished = remember{ mutableStateOf(false)}
+
 
             val infiniteTransition = rememberInfiniteTransition()
             val turntableRotation by infiniteTransition.animateFloat(
@@ -101,6 +86,7 @@ fun TurnTableDrawable(
                     .clickable(enabled = true, onClick = { playingState.value = false })
             )
 
+            // Turntable Arm and arm holder
             Box(
                 modifier =
                 Modifier
@@ -113,7 +99,7 @@ fun TurnTableDrawable(
 
             Column(
                 Modifier
-                    .rotate(turntableArmRotation)
+                    .rotate(turntableArmRotation) // value changes when turntablearm state is set to true
                     .align(Alignment.BottomStart)
                     .padding(12.dp, 0.dp, 0.dp, 0.dp)
 
@@ -130,24 +116,8 @@ fun TurnTableDrawable(
             }
 
         }
-
     }
-
 }
-
-
-//animations
-//            val infiniteTransition = rememberInfiniteTransition()
-//            val color by infiniteTransition.animateColor(
-//                initialValue = Color.Red,
-//                targetValue = Color.Green,
-//                animationSpec = infiniteRepeatable(
-//                    animation = tween(1000, easing = LinearEasing),
-//                    repeatMode = RepeatMode.Reverse
-//                )
-//            )
-//
-//            Box(Modifier.fillMaxSize().background(color))
 
 
 

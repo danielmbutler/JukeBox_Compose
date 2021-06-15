@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
@@ -15,7 +18,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,6 +45,7 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
     private val currentSong = mutableStateOf(trackList[0]) // currently playing song
     private val currentSongIndex = mutableStateOf(-1) // used for recyclerview playing overlay
     private val turntableArmState  = mutableStateOf(false)// turns turntable arm
+    private val isTurntableArmFinished = mutableStateOf(false) // lets us know the turntable Arm rotation is finished
     private lateinit var listState: LazyListState // current state of album list
     private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
 
@@ -62,7 +69,8 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
                         listState,
                         onMusicPlayerClick = this,
                         currentSongIndex,
-                        turntableArmState
+                        turntableArmState,
+                        isTurntableArmFinished
                     )
                     Log.d(TAG, "onCreate: TrackList : $trackList")
                 }
@@ -149,13 +157,20 @@ fun MainContent(
     listState: LazyListState,
     onMusicPlayerClick: onMusicPlayerClick,
     currentSongIndex: MutableState<Int>,
-    turntableArmState: MutableState<Boolean>
+    turntableArmState: MutableState<Boolean>,
+    isTurntableArmFinished: MutableState<Boolean>
 ) {
     Column {
         Title()
         AlbumList(isPlaying,onAlbumClick, listState,currentSongIndex, R.drawable.ic_baseline_pause_24)
-        TurnTable(isPlaying, turntableArmState)
-        Player(album, isPlaying, listState, onMusicPlayerClick )
+        TurnTable(isPlaying, turntableArmState,isTurntableArmFinished)
+        Player(
+            album, isPlaying,
+            listState,
+            onMusicPlayerClick = onMusicPlayerClick ,
+            turntableArmState = turntableArmState,
+            isTurntableArmFinished = isTurntableArmFinished
+        )
     }
 }
 
@@ -185,7 +200,9 @@ fun Player(
     album: MutableState<Album>,
     isPlaying: MutableState<Boolean>,
     listState: LazyListState,
-    onMusicPlayerClick: onMusicPlayerClick
+    turntableArmState: MutableState<Boolean>,
+    onMusicPlayerClick: onMusicPlayerClick,
+    isTurntableArmFinished: MutableState<Boolean>
 ) {
     Column(
         modifier = Modifier
@@ -203,57 +220,103 @@ fun Player(
             fontFamily = titleFont,
             textAlign = TextAlign.Center
         )
-        Row(Modifier.align(Alignment.CenterHorizontally)) {
+        Box(Modifier.align(Alignment.CenterHorizontally), contentAlignment = Alignment.Center) {
 
-            Image(
-                painter = painterResource(
-                    id =
-                    R.drawable.ic_baseline_skip_previous_24
-                ),
-                contentDescription = "Previous",
-                modifier = Modifier
-                    .clickable(true, onClick = {
-                        onMusicPlayerClick.onMusicButtonClick("previous")
-                    })
-                    .padding(16.dp)
-                    .size(35.dp)
-            )
-            Image(
-                painter = painterResource(
-                    id =
+            val canvasHeight = remember {
+                mutableStateOf(0f)
+            }
 
-                    if (isPlaying.value) {
-                        R.drawable.ic_baseline_pause_24
-                    } else {
-                        R.drawable.ic_baseline_play_arrow_24
-                    }
-                ),
-                contentDescription = "Play Button",
-                modifier = Modifier
-                    .clickable(true, onClick = { onMusicPlayerClick.onMusicButtonClick("play") })
-                    .padding(16.dp)
-                    .size(35.dp)
+
+            val musicBarAnim= rememberInfiniteTransition()
+            val musicBarHeight by musicBarAnim.animateFloat(
+                initialValue = 0f,
+                targetValue = canvasHeight.value,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(500, easing = LinearEasing)
+                )
             )
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_baseline_skip_next_24),
-                contentDescription = "Next Song",
-                modifier = Modifier
-                    .clickable(true, onClick = {
-                        onMusicPlayerClick.onMusicButtonClick("skip")
-                    })
-                    .padding(16.dp)
-                    .size(35.dp)
-            )
+            Canvas(modifier = Modifier
+                .fillMaxSize()
+                .rotate(180F) // rotate so rectangles get drawn from the bottom
+                .background(Color.DarkGray.copy(0.4f))){
+                val canvasWidth = this.size.width
+                canvasHeight.value = this.size.height
+                Log.d(TAG, "Canvas Height: $canvasHeight")
+
+                /* draw 8 rectangles along the canvas with a transparent color and a random height
+                 an Offset is configured to provide equal spacing between the bars
+                 animation begins once turntable arm rotation is complete and will continue if music is playing
+                 */
+                for(i in 0..7){
+                    drawRect(
+                        color = Color.DarkGray.copy(0.8f),
+                        size = Size(canvasWidth/9, if (isTurntableArmFinished.value && isPlaying.value) musicBarHeight / ( (1..6).random()) else 0f),
+                        topLeft = Offset(x = canvasWidth/8 * i.toFloat(), y = 0f)
+                    )
+                }
+
+
+            }
+
+            Row() {
+
+                Image(
+                    painter = painterResource(
+                        id =
+                        R.drawable.ic_baseline_skip_previous_24
+                    ),
+                    contentDescription = "Previous",
+                    modifier = Modifier
+                        .clickable(true, onClick = {
+                            onMusicPlayerClick.onMusicButtonClick("previous")
+                        })
+                        .padding(16.dp)
+                        .size(35.dp)
+                )
+                Image(
+                    painter = painterResource(
+                        id =
+
+                        if (isPlaying.value) {
+                            R.drawable.ic_baseline_pause_24
+                        } else {
+                            R.drawable.ic_baseline_play_arrow_24
+                        }
+                    ),
+                    contentDescription = "Play Button",
+                    modifier = Modifier
+                        .clickable(
+                            true,
+                            onClick = { onMusicPlayerClick.onMusicButtonClick("play") })
+                        .padding(16.dp)
+                        .size(35.dp)
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_baseline_skip_next_24),
+                    contentDescription = "Next Song",
+                    modifier = Modifier
+                        .clickable(true, onClick = {
+                            onMusicPlayerClick.onMusicButtonClick("skip")
+                        })
+                        .padding(16.dp)
+                        .size(35.dp)
+                )
+            }
+
         }
-
 
     }
 }
 
 
 @Composable
-fun TurnTable(isPlaying: MutableState<Boolean>, turntableArmState: MutableState<Boolean>) {
+fun TurnTable(
+    isPlaying: MutableState<Boolean>,
+    turntableArmState: MutableState<Boolean>,
+    isTurntableArmFinished: MutableState<Boolean>
+) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -267,7 +330,8 @@ fun TurnTable(isPlaying: MutableState<Boolean>, turntableArmState: MutableState<
             size = 240.dp,
             turntableDrawable = R.drawable.record,
             isPlaying = isPlaying,
-            turntableArmState
+            turntableArmState,
+            isTurntableArmFinished = isTurntableArmFinished
 
         )
     }
