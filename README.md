@@ -1,7 +1,7 @@
 # JukeBox Compose
 This a Jetpack Compose Music Player app (UI Only)
 
-## Screenshots
+## Demo
 
 <p align="center">
   <img src="https://github.com/danielmbutler/JukeBox_Compose/blob/master/resources/demo.gif" width="250" >>
