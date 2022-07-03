@@ -1,4 +1,4 @@
-package com.dbtechprojects.JukeBoxCompose.ui.theme
+package com.dbtechprojects.jukeBoxCompose.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "307611535102",
+    "project_id": "jukeboxcompose",
+    "storage_bucket": "jukeboxcompose.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307611535102:android:3a201cc973fcd4260a47af",
+        "android_client_info": {
+          "package_name": "com.dbtechprojects.jukeBoxCompose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "307611535102-53pqpplugd380epmggeqcmc5t073vaq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXy4g_iy8LT7mE_b1lFBcmvyW8iZoQ6zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "307611535102-53pqpplugd380epmggeqcmc5t073vaq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

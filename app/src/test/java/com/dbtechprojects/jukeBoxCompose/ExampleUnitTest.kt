@@ -1,4 +1,4 @@
-package com.dbtechprojects.JukeBoxCompose
+package com.dbtechprojects.jukeBoxCompose
 
 import org.junit.Test
 

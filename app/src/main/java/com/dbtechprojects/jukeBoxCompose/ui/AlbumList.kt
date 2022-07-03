@@ -1,4 +1,4 @@
-package com.dbtechprojects.JukeBoxCompose.ui
+package com.dbtechprojects.jukeBoxCompose.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -21,9 +21,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.dbtechprojects.JukeBoxCompose.Album
-import com.dbtechprojects.JukeBoxCompose.AlbumRepository
-import com.dbtechprojects.JukeBoxCompose.OnAlbumClick
+import com.dbtechprojects.jukeBoxCompose.Album
+import com.dbtechprojects.jukeBoxCompose.AlbumRepository
+import com.dbtechprojects.jukeBoxCompose.OnAlbumClick
 
 @Composable
 fun AlbumList(

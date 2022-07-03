@@ -1,4 +1,4 @@
-package com.dbtechprojects.JukeBoxCompose
+package com.dbtechprojects.jukeBoxCompose
 
 import android.os.Bundle
 import android.util.Log
@@ -27,12 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dbtechprojects.JukeBoxCompose.ui.AlbumList
-import com.dbtechprojects.JukeBoxCompose.ui.TurnTableDrawable
-import com.dbtechprojects.JukeBoxCompose.ui.theme.MyApplicationTheme
-import com.dbtechprojects.JukeBoxCompose.ui.theme.appBackground
-import com.dbtechprojects.JukeBoxCompose.ui.theme.titleFont
-import com.dbtechprojects.JukeBoxCompose.ui.theme.turntableBackground
+import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
+import com.dbtechprojects.jukeBoxCompose.ui.TurnTableDrawable
+import com.dbtechprojects.jukeBoxCompose.ui.theme.MyApplicationTheme
+import com.dbtechprojects.jukeBoxCompose.ui.theme.appBackground
+import com.dbtechprojects.jukeBoxCompose.ui.theme.titleFont
+import com.dbtechprojects.jukeBoxCompose.ui.theme.turntableBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
