@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.dbtechprojects.jukeBoxCompose.Album
 import com.dbtechprojects.jukeBoxCompose.AlbumRepository
 import com.dbtechprojects.jukeBoxCompose.OnAlbumClick
+import com.dbtechprojects.jukeBoxCompose.R
 
 @Composable
 fun AlbumList(
@@ -53,7 +54,7 @@ fun AlbumListItem(album: Album, onClick: OnAlbumClick, playingSongIndex: Mutable
             Box(Modifier.padding(6.dp)) {
 
                 Image(
-                    painter = painterResource(id = album.img),
+                    painter = painterResource(id = R.drawable.album_1),
                     contentDescription = "album image",
                     modifier = Modifier
                         .size(120.dp)

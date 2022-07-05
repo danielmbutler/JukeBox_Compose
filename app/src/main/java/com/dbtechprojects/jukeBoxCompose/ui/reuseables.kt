@@ -79,7 +79,6 @@ fun TurnTableDrawable(
                             0F
                         }
                     )
-                    .clickable(enabled = true, onClick = { playingState.value = false })
             )
 
             // Turntable Arm and arm holder
@@ -106,8 +105,6 @@ fun TurnTableDrawable(
                         .size(16.dp, height = 120.dp)
                         .background(Color.LightGray)
                         .border(BorderStroke(2.dp, Color.DarkGray))
-
-
                 )
             }
 

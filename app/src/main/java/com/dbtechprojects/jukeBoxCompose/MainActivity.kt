@@ -79,10 +79,7 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
     }
 
     override fun albumclick(album: Album) {
-        Log.d(TAG, "Album Clicked : ${album.songTitle} ")
-        isPlaying.value = !isPlaying.value
-        currentSong.value = album
-        currentSongIndex.value = album.index
+
     }
 
     override fun onMusicButtonClick(command: String) {
@@ -242,10 +239,9 @@ fun Player(
                 .background(Color.DarkGray.copy(0.4f))){
                 val canvasWidth = this.size.width
                 canvasHeight.value = this.size.height
-                Log.d(TAG, "Canvas Height: $canvasHeight")
 
                 /* draw 8 rectangles along the canvas with a transparent color and a random height
-                 an Offset is configured to provide equal spacing between the bars
+                 an Offset, is configured to provide equal spacing between the bars
                  animation begins once turntable arm rotation is complete and will continue if music is playing
                  */
                 for(i in 0..7){

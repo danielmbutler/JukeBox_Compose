@@ -1,31 +1,54 @@
 package com.dbtechprojects.jukeBoxCompose
 
+import android.util.Log
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 object AlbumRepository {
 
     fun getAlbums() : List<Album>{
 
         val albumlist = mutableListOf<Album>()
-        val drawableList = listOf<Int>(
-            R.drawable.album_1,
-            R.drawable.album_2,
-            R.drawable.album_3,
-            R.drawable.album_4,
-            R.drawable.album_5,
-            R.drawable.album_6,
-        )
 
-        for(i in drawableList){
-            albumlist.add(Album(i, (drawableList.indexOf(i)).toString() + "Song Title", drawableList.indexOf(i), false))
-        }
+        GlobalScope.launch {
+                try {
+                    Firebase.firestore.collection("tracks")
+                    .get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            for (document in task.result!!) {
+                                albumlist.add(document.toAlbum())
+                            }
+                        }
+                    }
+                }catch (e: Exception){
+                    Log.d("album", "failed : ${e.message}")
+                }
 
+            }
         return albumlist
     }
 }
 
 
 data class Album(
-    val img: Int,
+    val img: String,
     val songTitle: String,
     val index: Int,
-    var isPlaying: Boolean
+    val artist: String,
+    var isPlaying: Boolean,
+    var fileName :String
 )
+
+fun QueryDocumentSnapshot.toAlbum(): Album {
+    return Album(
+        img = this.getString("albumArt") ?: "",
+        songTitle = this.getString("name") ?: "",
+        artist = this.getString("artist") ?: "",
+        fileName = this.getString("fileName") ?: "",
+        isPlaying = false,
+        index = 0,
+    )
+}
