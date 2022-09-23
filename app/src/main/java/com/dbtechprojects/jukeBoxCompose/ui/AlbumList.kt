@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,7 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dbtechprojects.jukeBoxCompose.Album
-import com.dbtechprojects.jukeBoxCompose.AlbumRepository
 import com.dbtechprojects.jukeBoxCompose.OnAlbumClick
 import com.dbtechprojects.jukeBoxCompose.R
 
@@ -32,12 +30,11 @@ fun AlbumList(
     onClick: OnAlbumClick,
     listState: LazyListState,
     playingSongIndex: MutableState<Int>,
-    overlayIcon: Int
+    overlayIcon: Int,
+    albums: List<Album>
 ) {
 
-    val albums = remember { AlbumRepository.getAlbums() }
     // create AlbumRow
-
     LazyRow(contentPadding = PaddingValues(16.dp), state = listState) {
         items(
             items = albums,

@@ -4,31 +4,30 @@ import android.util.Log
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object AlbumRepository {
 
-    fun getAlbums() : List<Album>{
+    suspend fun getAlbums()  = suspendCoroutine<List<Album>> {
 
         val albumlist = mutableListOf<Album>()
-
-        GlobalScope.launch {
-                try {
-                    Firebase.firestore.collection("tracks")
+            try {
+                Firebase.firestore.collection("tracks")
                     .get().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            for (document in task.result!!) {
-                                albumlist.add(document.toAlbum())
+                            task.result.forEachIndexed { index, document ->
+                                albumlist.add(document.toAlbum(index))
                             }
+                            it.resume(albumlist)
                         }
                     }
-                }catch (e: Exception){
-                    Log.d("album", "failed : ${e.message}")
-                }
-
+            }catch (e: Exception){
+                Log.d("album", "failed : ${e.message}")
             }
-        return albumlist
+
+
+
     }
 }
 
@@ -42,13 +41,13 @@ data class Album(
     var fileName :String
 )
 
-fun QueryDocumentSnapshot.toAlbum(): Album {
+fun QueryDocumentSnapshot.toAlbum(index: Int): Album {
     return Album(
         img = this.getString("albumArt") ?: "",
         songTitle = this.getString("name") ?: "",
         artist = this.getString("artist") ?: "",
         fileName = this.getString("fileName") ?: "",
         isPlaying = false,
-        index = 0,
+        index = index,
     )
 }
