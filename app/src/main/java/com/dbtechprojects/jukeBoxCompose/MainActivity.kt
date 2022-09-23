@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
 
 private const val TAG = "MainActivity"
 
-class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
+class MainActivity : ComponentActivity(), onMusicPlayerClick {
 
     private val isPlaying = mutableStateOf(false) // is music current being played
     private lateinit var trackList: List<Album> // retrieve song list
@@ -44,8 +44,8 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch(Dispatchers.IO) {
             AlbumRepository.getAlbums().let {
-                trackList = it
-                Log.d("tracks", "$it")
+                trackList = it.sortedBy { it.index }
+                Log.d("tracks", "${it}")
                 currentSong = mutableStateOf(trackList.first())
             }
 
@@ -62,7 +62,6 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
                             listState = rememberLazyListState()
                             coroutineScope = rememberCoroutineScope()
                             MainContent(
-                                onAlbumClick = this@MainActivity,
                                 isPlaying = isPlaying,
                                 currentSong,
                                 listState,
@@ -79,10 +78,6 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
             }
         }
 
-
-    }
-
-    override fun albumclick(album: Album) {
 
     }
 
@@ -155,7 +150,6 @@ class MainActivity : ComponentActivity(), OnAlbumClick, onMusicPlayerClick {
 
 @Composable
 fun MainContent(
-    onAlbumClick: OnAlbumClick,
     isPlaying: MutableState<Boolean>,
     album: MutableState<Album>,
     listState: LazyListState,
@@ -169,7 +163,6 @@ fun MainContent(
         Title()
         AlbumList(
             isPlaying,
-            onAlbumClick,
             listState,
             currentSongIndex,
             R.drawable.ic_baseline_pause_24,
@@ -182,11 +175,6 @@ fun MainContent(
             isTurntableArmFinished = isTurntableArmFinished,
         )
     }
-}
-
-// onAlbumClickInterFace
-interface OnAlbumClick {
-    fun albumclick(album: Album)
 }
 
 // onMusicPlayerClick
