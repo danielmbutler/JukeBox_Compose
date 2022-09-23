@@ -30,7 +30,7 @@ fun AlbumList(
     listState: LazyListState,
     playingSongIndex: MutableState<Int>,
     overlayIcon: Int,
-    albums: List<Album>
+    albums: List<Album>,
 ) {
     // create AlbumRow
     LazyRow(contentPadding = PaddingValues(16.dp), state = listState) {

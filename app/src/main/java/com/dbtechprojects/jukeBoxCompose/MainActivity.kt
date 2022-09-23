@@ -1,5 +1,9 @@
 package com.dbtechprojects.jukeBoxCompose
 
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnPreparedListener
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -15,6 +19,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
 import com.dbtechprojects.jukeBoxCompose.ui.Player
@@ -39,6 +44,7 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
     private val isTurntableArmFinished = mutableStateOf(false) // lets us know the turntable Arm rotation is finished
     private lateinit var listState: LazyListState // current state of album list
     private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +87,22 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.stop()
+        mediaPlayer.release()
+    }
+
     override fun onMusicButtonClick(command: String) {
+        fun play(){
+            if (this::mediaPlayer.isInitialized){
+                mediaPlayer.release()
+            }
+            mediaPlayer = MediaPlayer()
+            mediaPlayer.setDataSource(this, currentSong.value.trackUrl.toUri())
+            mediaPlayer.prepareAsync()
+            mediaPlayer.setOnPreparedListener(OnPreparedListener { mp -> mp.start() })
+        }
 
         when (command) {
             "skip" -> {
@@ -97,11 +118,15 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
                     currentSongIndex.value++ // increment song index
                 }
 
+
                 Log.d(TAG, "onMusicButtonClick: next song index $nextSongIndex")
                 Log.d(TAG, "onMusicButtonClick: tracklist size ${trackList.size}")
                 Log.d(TAG, "onMusicButtonClick: currentsong index ${currentSong.value.index}")
                 currentSong.value = trackList[nextSongIndex]
 
+                if (isPlaying.value){
+                    play()
+                }
                 coroutineScope.launch {
                     if (isPlaying.value) {
                         currentSong.value.isPlaying = true
@@ -126,6 +151,10 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
                 }
                 currentSong.value = trackList[previousSongIndex]
 
+                if (isPlaying.value){
+                    play()
+                }
+
                 coroutineScope.launch {
                     currentSong.value.isPlaying = true
                     listState.animateScrollToItem(currentSong.value.index)
@@ -139,6 +168,7 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
                 currentSongIndex.value = currentSong.value.index //confirms current song Index
                 turntableArmState.value =
                     !turntableArmState.value // moves turntable Arm Accordingly
+                if (isPlaying.value) play() else mediaPlayer.stop(); mediaPlayer.release()
             }
         }
 
