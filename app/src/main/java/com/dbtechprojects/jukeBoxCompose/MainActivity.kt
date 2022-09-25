@@ -1,9 +1,6 @@
 package com.dbtechprojects.jukeBoxCompose
 
-import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnPreparedListener
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -19,7 +16,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
 import com.dbtechprojects.jukeBoxCompose.ui.Player
@@ -41,6 +37,7 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
     private lateinit var currentSong: MutableState<Album>// currently playing song
     private val currentSongIndex = mutableStateOf(-1) // used for recyclerview playing overlay
     private val turntableArmState = mutableStateOf(false)// turns turntable arm
+    private val isBuffering = mutableStateOf(false)
     private val isTurntableArmFinished = mutableStateOf(false) // lets us know the turntable Arm rotation is finished
     private lateinit var listState: LazyListState // current state of album list
     private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
@@ -75,7 +72,8 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
                                 currentSongIndex,
                                 turntableArmState,
                                 isTurntableArmFinished,
-                                trackList,
+                                isBuffering = isBuffering,
+                                trackList
                             )
                             Log.d(TAG, "onCreate: TrackList : $trackList")
                         }
@@ -93,17 +91,34 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
         mediaPlayer.release()
     }
 
-    override fun onMusicButtonClick(command: String) {
-        fun play(){
-            if (this::mediaPlayer.isInitialized){
+    private fun play() {
+        try {
+            if (this::mediaPlayer.isInitialized && isPlaying.value){
+                mediaPlayer.stop()
                 mediaPlayer.release()
+                isPlaying.value = false
+                turntableArmState.value = false
+                isTurntableArmFinished.value = false
             }
+            isBuffering.value = true
             mediaPlayer = MediaPlayer()
-            mediaPlayer.setDataSource(this, currentSong.value.trackUrl.toUri())
+            mediaPlayer.setDataSource(currentSong.value.trackUrl)
             mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener(OnPreparedListener { mp -> mp.start() })
+            mediaPlayer.setOnPreparedListener {
+                isBuffering.value = false
+                isPlaying.value = true
+                if (!turntableArmState.value){
+                    turntableArmState.value = true
+                }
+                mediaPlayer.start()
+            }
+        } catch (e: Exception) {
+            Log.d("exc" , "2")
+            e.printStackTrace()
         }
+    }
 
+    override fun onMusicButtonClick(command: String) {
         when (command) {
             "skip" -> {
                 // check list
@@ -162,13 +177,19 @@ class MainActivity : ComponentActivity(), onMusicPlayerClick {
             }
 
             "play" -> {
-                isPlaying.value = !isPlaying.value // confirms if we are in playing or paused mode
                 currentSong.value.isPlaying =
                     !isPlaying.value // confirms whether current song is played or paused
                 currentSongIndex.value = currentSong.value.index //confirms current song Index
-                turntableArmState.value =
-                    !turntableArmState.value // moves turntable Arm Accordingly
-                if (isPlaying.value) play() else mediaPlayer.stop(); mediaPlayer.release()
+                try {
+                    if (this::mediaPlayer.isInitialized && isPlaying.value){
+                        mediaPlayer.stop()
+                        mediaPlayer.release()
+                        isPlaying.value = false
+                    } else play()
+                }catch (e: Exception){
+                    mediaPlayer.release()
+                    isPlaying.value = false
+                }
             }
         }
 
@@ -187,6 +208,7 @@ fun MainContent(
     currentSongIndex: MutableState<Int>,
     turntableArmState: MutableState<Boolean>,
     isTurntableArmFinished: MutableState<Boolean>,
+    isBuffering: MutableState<Boolean>,
     albums: List<Album>,
 ) {
     Column {
@@ -203,6 +225,7 @@ fun MainContent(
             album, isPlaying,
             onMusicPlayerClick = onMusicPlayerClick,
             isTurntableArmFinished = isTurntableArmFinished,
+            isBuffering = isBuffering
         )
     }
 }

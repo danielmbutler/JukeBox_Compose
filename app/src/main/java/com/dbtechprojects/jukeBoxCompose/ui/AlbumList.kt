@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -60,16 +61,19 @@ fun AlbumListItem(
                         .build(),
                     "",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.clip(RoundedCornerShape(32.dp)).size(120.dp)
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(32.dp))
+                        .size(120.dp)
                 )
                 Log.d("TAG", "AlbumListItem:${playingSongIndex.value}  $album")
 
                 if (playingSongIndex.value == album.index && isPlaying.value) {
-                    AlbumOverlayRoundedBox(
+                    OverlayRoundedBox(
                         shape = RoundedCornerShape(32.dp),
                         color = Color.Gray.copy(alpha = 0.6f),
                         size = 120.dp,
-                        overlayIcon = overlayIcon
+                        overlayIcon = overlayIcon,
+                        contentDescription = "Album Play indicator"
                     )
                 }
 
@@ -79,23 +83,36 @@ fun AlbumListItem(
 }
 
 @Composable
-fun AlbumOverlayRoundedBox(shape: Shape, color: Color, size: Dp, overlayIcon: Int) {
+fun OverlayRoundedBox(
+    shape: Shape,
+    color: Color,
+    size: Dp? = null,
+    overlayIcon: Int? = null,
+    showProgressBar: Boolean = false,
+    contentDescription: String? = null) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
     ) {
         Box(
-            modifier = Modifier
-                .size(size)
+            modifier = if (size == null)Modifier
+                .clip(shape)
+                .background(color) else Modifier
                 .clip(shape)
                 .background(color)
+                .size(size)
         ) {
-            Image(
-                painter = painterResource(id = overlayIcon),
-                contentDescription = "Album Play indicator",
-                modifier = Modifier.align(Alignment.Center)
-            )
+            if (showProgressBar){
+                CircularProgressIndicator()
+            } else {
+                Image(
+                    painter = painterResource(id = overlayIcon!!),
+                    contentDescription = contentDescription,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
         }
     }
 }

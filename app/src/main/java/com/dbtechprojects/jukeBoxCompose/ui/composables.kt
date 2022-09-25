@@ -6,6 +6,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -55,7 +56,8 @@ fun Player(
     album: MutableState<Album>,
     isPlaying: MutableState<Boolean>,
     onMusicPlayerClick: onMusicPlayerClick,
-    isTurntableArmFinished: MutableState<Boolean>
+    isTurntableArmFinished: MutableState<Boolean>,
+    isBuffering: MutableState<Boolean>
 ) {
     Column(
         modifier = Modifier
@@ -72,17 +74,17 @@ fun Player(
             fontFamily = titleFont,
             textAlign = TextAlign.Center
         )
-        Box(Modifier.align(Alignment.CenterHorizontally), contentAlignment = Alignment.Center) {
 
+        Box(Modifier.align(Alignment.CenterHorizontally), contentAlignment = Alignment.Center) {
             val canvasHeight = remember {
                 mutableStateOf(0f)
             }
 
-            val musicBarAnim= rememberInfiniteTransition()
+            val musicBarAnim = rememberInfiniteTransition()
 
             val musicBarHeight by musicBarAnim.animateFloat(
                 initialValue = 0f,
-                targetValue =  if (isTurntableArmFinished.value && isPlaying.value) {
+                targetValue = if (isTurntableArmFinished.value && isPlaying.value) {
                     canvasHeight.value
                 } else 0f,
                 animationSpec = infiniteRepeatable(
@@ -92,10 +94,12 @@ fun Player(
             )
 
 
-            Canvas(modifier = Modifier
-                .fillMaxSize()
-                .rotate(180F) // rotate so rectangles get drawn from the bottom
-                .background(Color.DarkGray.copy(0.4f))){
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .rotate(180F) // rotate so rectangles get drawn from the bottom
+                    .background(Color.DarkGray.copy(0.4f))
+            ) {
                 val canvasWidth = this.size.width
                 canvasHeight.value = this.size.height
 
@@ -103,11 +107,11 @@ fun Player(
                  an Offset, is configured to provide equal spacing between the bars
                  animation begins once turntable arm rotation is complete and will continue if music is playing
                  */
-                for(i in 0..7){
+                for (i in 0..7) {
                     drawRect(
                         color = Color.DarkGray.copy(0.8f),
-                        size = Size(canvasWidth/9, musicBarHeight),
-                        topLeft = Offset(x = canvasWidth/8 * i.toFloat(), y = 0f)
+                        size = Size(canvasWidth / 9, musicBarHeight),
+                        topLeft = Offset(x = canvasWidth / 8 * i.toFloat(), y = 0f)
                     )
                 }
 
@@ -123,7 +127,7 @@ fun Player(
                     ),
                     contentDescription = "Previous",
                     modifier = Modifier
-                        .clickable(true, onClick = {
+                        .clickable(!isBuffering.value, onClick = {
                             onMusicPlayerClick.onMusicButtonClick("previous")
                         })
                         .padding(16.dp)
@@ -142,7 +146,7 @@ fun Player(
                     contentDescription = "Play Button",
                     modifier = Modifier
                         .clickable(
-                            true,
+                            !isBuffering.value,
                             onClick = { onMusicPlayerClick.onMusicButtonClick("play") })
                         .padding(16.dp)
                         .size(35.dp)
@@ -152,15 +156,19 @@ fun Player(
                     painter = painterResource(id = R.drawable.ic_baseline_skip_next_24),
                     contentDescription = "Next Song",
                     modifier = Modifier
-                        .clickable(true, onClick = {
+                        .clickable(!isBuffering.value, onClick = {
                             onMusicPlayerClick.onMusicButtonClick("skip")
                         })
                         .padding(16.dp)
                         .size(35.dp)
                 )
             }
+            if (isBuffering.value) {
+                ProgressOverlay()
+            }
 
         }
+
 
     }
 }
@@ -222,7 +230,6 @@ fun TurnTableDrawable(
         ) {
 
 
-
             val infiniteTransition = rememberInfiniteTransition()
             val turntableRotation by infiniteTransition.animateFloat(
                 initialValue = 0F,
@@ -235,7 +242,7 @@ fun TurnTableDrawable(
 
             val turntableArmRotation: Float by animateFloatAsState(
                 targetValue = if (turntableArmState.value) 35f else 0f,
-                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing,),
+                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
                 finishedListener = {
                     isTurntableArmFinished.value = true
                 }
@@ -282,6 +289,28 @@ fun TurnTableDrawable(
                         .border(BorderStroke(2.dp, Color.DarkGray))
                 )
             }
+
+        }
+    }
+}
+
+@Composable
+fun ProgressOverlay(
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .background(Color.Gray.copy(alpha = 0.6f))
+                .fillMaxSize()
+        ) {
+
+            CircularProgressIndicator(
+                color = turntableBackground,
+                modifier = Modifier.align(Alignment.Center)
+            )
 
         }
     }
