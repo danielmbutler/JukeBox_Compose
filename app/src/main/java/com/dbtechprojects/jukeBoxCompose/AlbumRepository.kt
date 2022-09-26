@@ -1,7 +1,9 @@
 package com.dbtechprojects.jukeBoxCompose
 
 import android.util.Log
-import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.dbtechprojects.jukeBoxCompose.util.Constants
+import com.dbtechprojects.jukeBoxCompose.model.Track
+import com.dbtechprojects.jukeBoxCompose.model.toTrack
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.app
@@ -11,32 +13,34 @@ import kotlin.coroutines.suspendCoroutine
 
 object AlbumRepository {
     private val storage = Firebase.storage(Firebase.app)
-    private val albumArtRef = storage.reference.child(ALBUM_ART_CAPS)
+    private val albumArtRef = storage.reference.child(Constants.ALBUM_ART_CAPS)
     private val trackReference = storage.reference
 
 
-    suspend fun getAlbums() = suspendCoroutine<List<Album>> {
+    suspend fun getAlbums() = suspendCoroutine<List<Track>> {
 
-        val albumlist = mutableListOf<Album>()
+        val albumList = mutableListOf<Track>()
         try {
-            Firebase.firestore.collection(TRACKS)
+            Firebase.firestore.collection(Constants.TRACKS)
                 .get().addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var index = 0
                         task.result.forEach { document ->
-                            val imageUrl = albumArtRef.child(document.getString(ALBUM_ART)!!)
-                            val trackUrl = trackReference.child(document.getString(FILENAME)!!)
+                            val imageUrl =
+                                albumArtRef.child(document.getString(Constants.ALBUM_ART)!!)
+                            val trackUrl =
+                                trackReference.child(document.getString(Constants.FILENAME)!!)
                             imageUrl.downloadUrl.addOnSuccessListener { imgDownloadUrl ->
                                 trackUrl.downloadUrl.addOnSuccessListener { trackDownloadUrl ->
-                                    albumlist.add(
-                                        document.toAlbum(
+                                    albumList.add(
+                                        document.toTrack(
                                             index,
                                             imgDownloadUrl.toString(),
                                             trackDownloadUrl.toString()
                                         )
                                     )
                                     if (index == task.result.size() - 1) {
-                                        it.resume(albumlist)
+                                        it.resume(albumList)
                                     }
                                     index++
                                 }
@@ -52,32 +56,4 @@ object AlbumRepository {
 }
 
 
-data class Album(
-    val img: String,
-    val songTitle: String,
-    val index: Int,
-    val artist: String,
-    val trackUrl: String,
-    var isPlaying: Boolean,
-    var fileName: String
-)
 
-const val NAME = "name"
-const val ARTIST = "artist"
-const val FILENAME = "fileName"
-const val ALBUM_ART = "albumArt"
-const val TRACKS = "tracks"
-const val ALBUM_ART_CAPS = "AlbumArt"
-
-
-fun QueryDocumentSnapshot.toAlbum(index: Int, imgUrl: String, trackUrl: String): Album {
-    return Album(
-        img = imgUrl,
-        songTitle = this.getString(NAME) ?: "",
-        artist = this.getString(ARTIST) ?: "",
-        fileName = this.getString(FILENAME) ?: "",
-        isPlaying = false,
-        index = index,
-        trackUrl = trackUrl
-    )
-}

@@ -23,9 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dbtechprojects.jukeBoxCompose.Album
 import com.dbtechprojects.jukeBoxCompose.R
-import com.dbtechprojects.jukeBoxCompose.onMusicPlayerClick
+import com.dbtechprojects.jukeBoxCompose.OnMusicButtonClick
+import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.theme.titleFont
 import com.dbtechprojects.jukeBoxCompose.ui.theme.turntableBackground
 
@@ -53,9 +53,9 @@ fun Title() {
 
 @Composable
 fun Player(
-    album: MutableState<Album>,
+    album: MutableState<Track>,
     isPlaying: MutableState<Boolean>,
-    onMusicPlayerClick: onMusicPlayerClick,
+    onMusicPlayerClick: OnMusicButtonClick,
     isTurntableArmFinished: MutableState<Boolean>,
     isBuffering: MutableState<Boolean>
 ) {

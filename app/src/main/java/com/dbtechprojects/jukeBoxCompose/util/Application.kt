@@ -1,4 +1,4 @@
-package com.dbtechprojects.jukeBoxCompose
+package com.dbtechprojects.jukeBoxCompose.util
 
 import android.app.Application
 import com.google.firebase.FirebaseApp

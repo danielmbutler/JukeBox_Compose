@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.dbtechprojects.jukeBoxCompose.Album
+import com.dbtechprojects.jukeBoxCompose.model.Track
 
 @Composable
 fun AlbumList(
@@ -31,7 +31,7 @@ fun AlbumList(
     listState: LazyListState,
     playingSongIndex: MutableState<Int>,
     overlayIcon: Int,
-    albums: List<Album>,
+    albums: List<Track>,
 ) {
     // create AlbumRow
     LazyRow(contentPadding = PaddingValues(16.dp), state = listState) {
@@ -45,7 +45,7 @@ fun AlbumList(
 
 @Composable
 fun AlbumListItem(
-    album: Album,
+    album: Track,
     playingSongIndex: MutableState<Int>,
     isPlaying: MutableState<Boolean>,
     overlayIcon: Int
