@@ -20,6 +20,7 @@ import com.dbtechprojects.jukeBoxCompose.ui.Player
 import com.dbtechprojects.jukeBoxCompose.ui.Title
 import com.dbtechprojects.jukeBoxCompose.ui.TurnTable
 import com.dbtechprojects.jukeBoxCompose.ui.composables.LoadingScreen
+import com.dbtechprojects.jukeBoxCompose.ui.composables.TrackDetailDialog
 import com.dbtechprojects.jukeBoxCompose.ui.theme.JukeBoxComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
     private val isPlaying = mutableStateOf(false) // is music current being played
     private var trackList =listOf<Track>() // retrieve song list
     private lateinit var currentSong: MutableState<Track>// currently playing song
+    private val clickedSong: MutableState<Track?> = mutableStateOf(null)// currently playing song
     private val currentSongIndex = mutableStateOf(-1) // used for recyclerview playing overlay
     private val turntableArmState = mutableStateOf(false)// turns turntable arm
     private val isBuffering = mutableStateOf(false)
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                 ) {
                     listState = rememberLazyListState()
                     coroutineScope = rememberCoroutineScope()
+                    val openDialog = remember { mutableStateOf(false) }
                     val trackList by tracksViewModel.trackList.observeAsState()
                     if (trackList?.isNotEmpty() == true) {
                         MainContent(
@@ -71,8 +74,11 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                             isTurntableArmFinished,
                             isBuffering = isBuffering,
                             trackList!!
-                        )
-                        Log.d(TAG, "onCreate: TrackList : $trackList")
+                        ) { song ->
+                            clickedSong.value = song
+                            openDialog.value = true
+                        }
+                        TrackDetailDialog(track = clickedSong, openDialog = openDialog)
                     } else {
                         LoadingScreen()
                     }
@@ -82,6 +88,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
             }
         }
     }
+
 
     private fun observeViewModel(){
         tracksViewModel.trackList.observe(this) { list ->
@@ -212,6 +219,7 @@ fun MainContent(
     isTurntableArmFinished: MutableState<Boolean>,
     isBuffering: MutableState<Boolean>,
     albums: List<Track>,
+    onTrackItemClick: (Track) -> Unit,
 ) {
     Column {
         Title()
@@ -220,7 +228,8 @@ fun MainContent(
             listState,
             currentSongIndex,
             R.drawable.ic_baseline_pause_24,
-            albums
+            albums,
+            onTrackItemClick
         )
         TurnTable(isPlaying, turntableArmState, isTurntableArmFinished)
         Player(

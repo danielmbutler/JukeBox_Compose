@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import com.dbtechprojects.jukeBoxCompose.OnMusicButtonClick
 import com.dbtechprojects.jukeBoxCompose.R
 import com.dbtechprojects.jukeBoxCompose.model.Track
-import com.dbtechprojects.jukeBoxCompose.ui.theme.ThemeColors
 import com.dbtechprojects.jukeBoxCompose.ui.theme.titleFont
 
 

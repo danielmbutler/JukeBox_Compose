@@ -3,6 +3,7 @@ package com.dbtechprojects.jukeBoxCompose.ui
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -31,32 +32,41 @@ fun AlbumList(
     listState: LazyListState,
     playingSongIndex: MutableState<Int>,
     overlayIcon: Int,
-    albums: List<Track>,
+    tracks: List<Track>,
+    onTrackItemClick: (Track) -> Unit,
 ) {
     // create AlbumRow
     LazyRow(contentPadding = PaddingValues(16.dp), state = listState) {
         items(
-            items = albums,
+            items = tracks,
             itemContent = {
-                AlbumListItem(album = it, playingSongIndex, isPlaying, overlayIcon)
+                TrackListItem(
+                    track = it,
+                    playingSongIndex,
+                    isPlaying,
+                    overlayIcon,
+                    onTrackItemClick
+                )
             })
     }
 }
 
 @Composable
-fun AlbumListItem(
-    album: Track,
+fun TrackListItem(
+    track: Track,
     playingSongIndex: MutableState<Int>,
     isPlaying: MutableState<Boolean>,
-    overlayIcon: Int
+    overlayIcon: Int,
+    onTrackItemClick: (Track) -> Unit
 ) {
-    Row {
+    Row(modifier = Modifier.clickable(true, onClick = { onTrackItemClick(track) })) {
         Column {
-            Box(Modifier.padding(6.dp)) {
-
+            Box(
+                Modifier.padding(6.dp)
+            ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(album.img)
+                        .data(track.img)
                         .crossfade(true)
                         .build(),
                     "",
@@ -65,9 +75,9 @@ fun AlbumListItem(
                         .clip(RoundedCornerShape(32.dp))
                         .size(120.dp)
                 )
-                Log.d("TAG", "AlbumListItem:${playingSongIndex.value}  $album")
+                Log.d("TAG", "AlbumListItem:${playingSongIndex.value}  $track")
 
-                if (playingSongIndex.value == album.index && isPlaying.value) {
+                if (playingSongIndex.value == track.index && isPlaying.value) {
                     OverlayRoundedBox(
                         shape = RoundedCornerShape(32.dp),
                         color = Color.Gray.copy(alpha = 0.6f),
@@ -89,21 +99,22 @@ fun OverlayRoundedBox(
     size: Dp? = null,
     overlayIcon: Int? = null,
     showProgressBar: Boolean = false,
-    contentDescription: String? = null) {
+    contentDescription: String? = null
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
     ) {
         Box(
-            modifier = if (size == null)Modifier
+            modifier = if (size == null) Modifier
                 .clip(shape)
                 .background(color) else Modifier
                 .clip(shape)
                 .background(color)
                 .size(size)
         ) {
-            if (showProgressBar){
+            if (showProgressBar) {
                 CircularProgressIndicator()
             } else {
                 Image(

@@ -2,6 +2,7 @@ package com.dbtechprojects.jukeBoxCompose.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val dialogColor = Color(0xFF5F5F5F)
 
 sealed class ThemeColors(
     val background: Color,
