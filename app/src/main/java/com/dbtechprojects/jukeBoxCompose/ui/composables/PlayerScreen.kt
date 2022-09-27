@@ -1,12 +1,12 @@
 package com.dbtechprojects.jukeBoxCompose.ui
 
-
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.sp
 import com.dbtechprojects.jukeBoxCompose.OnMusicButtonClick
 import com.dbtechprojects.jukeBoxCompose.R
 import com.dbtechprojects.jukeBoxCompose.model.Track
+import com.dbtechprojects.jukeBoxCompose.ui.theme.ThemeColors
 import com.dbtechprojects.jukeBoxCompose.ui.theme.titleFont
-import com.dbtechprojects.jukeBoxCompose.ui.theme.turntableBackground
 
 
 @Composable
@@ -186,7 +186,6 @@ fun TurnTable(
 
         TurnTableDrawable(
             shape = RoundedCornerShape(20.dp),
-            color = turntableBackground,
             size = 240.dp,
             turntableDrawable = R.drawable.record,
             isPlaying = isPlaying,
@@ -201,7 +200,6 @@ fun TurnTable(
 @Composable
 fun TurnTableDrawable(
     shape: Shape,
-    color: Color,
     size: Dp,
     turntableDrawable: Int,
     isPlaying: MutableState<Boolean>,
@@ -223,7 +221,7 @@ fun TurnTableDrawable(
             modifier = Modifier
                 .size(size)
                 .clip(shape)
-                .background(color)
+                .background(MaterialTheme.colors.primary)
                 .padding(0.dp)
         ) {
 
