@@ -1,5 +1,5 @@
 # JukeBox Compose
-This a Jetpack Compose Music Player app (UI Only)
+This a Jetpack Compose Music Streaming app using Firebase.
 
 ## Demo
 
@@ -13,7 +13,11 @@ This a Jetpack Compose Music Player app (UI Only)
 * All UI created using Jetpack Compose,
 * Kotlin
 * Animations - used AnimateFloatAsState, and InfiniteTransition
+* Hilt
+* Firebase Storage, Firestore Database
 
 ## Resources
 https://developer.android.com/jetpack/compose/animation#overview
+https://developer.android.com/jetpack/compose/themes/material#material3
+https://developer.android.com/training/dependency-injection/hilt-android
 
