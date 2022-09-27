@@ -1,9 +1,9 @@
 package com.dbtechprojects.jukeBoxCompose
 
 import android.util.Log
-import com.dbtechprojects.jukeBoxCompose.util.Constants
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.model.toTrack
+import com.dbtechprojects.jukeBoxCompose.util.Constants
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.app
@@ -11,7 +11,7 @@ import com.google.firebase.storage.ktx.storage
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-object AlbumRepository {
+class AlbumRepository() {
     private val storage = Firebase.storage(Firebase.app)
     private val albumArtRef = storage.reference.child(Constants.ALBUM_ART_CAPS)
     private val trackReference = storage.reference

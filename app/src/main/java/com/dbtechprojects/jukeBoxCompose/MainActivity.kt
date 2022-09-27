@@ -5,29 +5,29 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
 import com.dbtechprojects.jukeBoxCompose.ui.Player
 import com.dbtechprojects.jukeBoxCompose.ui.Title
 import com.dbtechprojects.jukeBoxCompose.ui.TurnTable
+import com.dbtechprojects.jukeBoxCompose.ui.composables.LoadingScreen
 import com.dbtechprojects.jukeBoxCompose.ui.theme.MyApplicationTheme
 import com.dbtechprojects.jukeBoxCompose.ui.theme.appBackground
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity(), OnMusicButtonClick {
 
     private val isPlaying = mutableStateOf(false) // is music current being played
@@ -41,10 +41,11 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
     private lateinit var listState: LazyListState // current state of album list
     private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
     private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var tracksViewModel: TracksViewModel
+    private  val tracksViewModel: TracksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setContent {
             MyApplicationTheme {
@@ -71,9 +72,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                         )
                         Log.d(TAG, "onCreate: TrackList : $trackList")
                     } else {
-                        Column(Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                        }
+                       LoadingScreen()
                     }
 
 
