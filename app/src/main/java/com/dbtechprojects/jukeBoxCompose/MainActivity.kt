@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        observeViewModel()
 
         setContent {
             MyApplicationTheme {
@@ -57,8 +58,8 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                     // should retrieve from viewmodel to keep on rotation
                     listState = rememberLazyListState()
                     coroutineScope = rememberCoroutineScope()
-                    val trackList = remember {trackList}
-                    if (trackList.isNotEmpty()){
+                    val trackList by tracksViewModel.trackList.observeAsState()
+                    if (trackList?.isNotEmpty() == true) {
                         MainContent(
                             isPlaying = isPlaying,
                             currentSong,
@@ -68,24 +69,24 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                             turntableArmState,
                             isTurntableArmFinished,
                             isBuffering = isBuffering,
-                            trackList
+                            trackList!!
                         )
                         Log.d(TAG, "onCreate: TrackList : $trackList")
                     } else {
-                       LoadingScreen()
+                        LoadingScreen()
                     }
 
 
                 }
             }
         }
-        observeViewModel()
     }
 
     private fun observeViewModel(){
         tracksViewModel.trackList.observe(this) { list ->
             if (list.isNotEmpty()) {
                 trackList = list
+                currentSong = mutableStateOf(list.first())
             }
         }
     }
