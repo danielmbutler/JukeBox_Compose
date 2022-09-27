@@ -27,6 +27,10 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
+
+//TODO
+// add track details on list item press
+// run through changes outlined Github issue
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), OnMusicButtonClick {
 
@@ -49,12 +53,10 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
 
         setContent {
             JukeBoxComposeTheme{
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    // should retrieve from viewmodel to keep on rotation
                     listState = rememberLazyListState()
                     coroutineScope = rememberCoroutineScope()
                     val trackList by tracksViewModel.trackList.observeAsState()
