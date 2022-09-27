@@ -27,8 +27,8 @@ fun TrackDetailDialog(track: MutableState<Track?>, openDialog: MutableState<Bool
             },
             text = {
                 Column {
-                    Text(stringResource(R.string.artist) + track.artist)
-                    Text(stringResource(R.string.trackNo) + (track.index + 1))
+                    Text(stringResource(R.string.artist) + " " + track.artist)
+                    Text(stringResource(R.string.trackNo) + " " + (track.index + 1))
                 }
             },
             buttons = {

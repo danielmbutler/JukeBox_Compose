@@ -47,7 +47,6 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         observeViewModel()
-
         setContent {
             JukeBoxComposeTheme {
                 Surface(
@@ -77,8 +76,6 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                     } else {
                         LoadingScreen()
                     }
-
-
                 }
             }
         }

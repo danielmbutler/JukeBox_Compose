@@ -4,7 +4,7 @@ This a Jetpack Compose Music Streaming app using Firebase.
 ## Demo
 
 <p align="center">
-  <img src="https://github.com/danielmbutler/JukeBox_Compose/blob/master/resources/demo.gif" width="250" >>
+  <img src="https://github.com/danielmbutler/JukeBox_Compose/blob/master/resources/gitDemo.gif" width="250" >>
 </p>
 
 
