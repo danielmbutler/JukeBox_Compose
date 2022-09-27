@@ -11,13 +11,13 @@ import com.google.firebase.storage.ktx.storage
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class AlbumRepository() {
+class TrackRepository {
     private val storage = Firebase.storage(Firebase.app)
     private val albumArtRef = storage.reference.child(Constants.ALBUM_ART_CAPS)
     private val trackReference = storage.reference
 
 
-    suspend fun getAlbums() = suspendCoroutine<List<Track>> {
+    suspend fun getTracks() = suspendCoroutine<List<Track>> {
 
         val albumList = mutableListOf<Track>()
         try {
@@ -49,7 +49,7 @@ class AlbumRepository() {
                     }
                 }
         } catch (e: Exception) {
-            Log.d("album", "failed : ${e.message}")
+            Log.d("trackSync", "failed : ${e.message}")
         }
 
     }

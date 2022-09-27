@@ -1,6 +1,6 @@
 package com.dbtechprojects.jukeBoxCompose.util
 
-import com.dbtechprojects.jukeBoxCompose.AlbumRepository
+import com.dbtechprojects.jukeBoxCompose.TrackRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 object Injection {
 
     @Provides
-    fun provideRepository(): AlbumRepository { return AlbumRepository() }
+    fun provideRepository(): TrackRepository { return TrackRepository() }
 }

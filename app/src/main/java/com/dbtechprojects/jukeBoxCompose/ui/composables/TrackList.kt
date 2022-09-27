@@ -1,6 +1,5 @@
 package com.dbtechprojects.jukeBoxCompose.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,10 +19,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.dbtechprojects.jukeBoxCompose.R
 import com.dbtechprojects.jukeBoxCompose.model.Track
 
 @Composable
@@ -35,7 +36,6 @@ fun AlbumList(
     tracks: List<Track>,
     onTrackItemClick: (Track) -> Unit,
 ) {
-    // create AlbumRow
     LazyRow(contentPadding = PaddingValues(16.dp), state = listState) {
         items(
             items = tracks,
@@ -75,15 +75,13 @@ fun TrackListItem(
                         .clip(RoundedCornerShape(32.dp))
                         .size(120.dp)
                 )
-                Log.d("TAG", "AlbumListItem:${playingSongIndex.value}  $track")
-
                 if (playingSongIndex.value == track.index && isPlaying.value) {
                     OverlayRoundedBox(
                         shape = RoundedCornerShape(32.dp),
                         color = Color.Gray.copy(alpha = 0.6f),
                         size = 120.dp,
                         overlayIcon = overlayIcon,
-                        contentDescription = "Album Play indicator"
+                        contentDescription = stringResource(R.string.play_indicator)
                     )
                 }
 

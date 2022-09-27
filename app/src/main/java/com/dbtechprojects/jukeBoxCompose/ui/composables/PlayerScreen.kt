@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dbtechprojects.jukeBoxCompose.OnMusicButtonClick
 import com.dbtechprojects.jukeBoxCompose.R
+import com.dbtechprojects.jukeBoxCompose.model.MusicPlayerOption
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.theme.titleFont
 
@@ -39,7 +41,7 @@ fun Title() {
     ) {
 
         Text(
-            "JukeBox Compose",
+            stringResource(R.string.app_title),
             Modifier.align(Alignment.CenterHorizontally),
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
@@ -115,17 +117,16 @@ fun Player(
 
             }
 
-            Row() {
-
+            Row {
                 Image(
                     painter = painterResource(
                         id =
                         R.drawable.ic_baseline_skip_previous_24
                     ),
-                    contentDescription = "Previous",
+                    contentDescription = stringResource(R.string.previous),
                     modifier = Modifier
                         .clickable(!isBuffering.value, onClick = {
-                            onMusicPlayerClick.onMusicButtonClick("previous")
+                            onMusicPlayerClick.onMusicButtonClick(MusicPlayerOption.Previous)
                         })
                         .padding(16.dp)
                         .size(35.dp)
@@ -144,17 +145,16 @@ fun Player(
                     modifier = Modifier
                         .clickable(
                             !isBuffering.value,
-                            onClick = { onMusicPlayerClick.onMusicButtonClick("play") })
+                            onClick = { onMusicPlayerClick.onMusicButtonClick(MusicPlayerOption.Play) })
                         .padding(16.dp)
                         .size(35.dp)
                 )
-
                 Image(
                     painter = painterResource(id = R.drawable.ic_baseline_skip_next_24),
-                    contentDescription = "Next Song",
+                    contentDescription = stringResource(R.string.next_song),
                     modifier = Modifier
                         .clickable(!isBuffering.value, onClick = {
-                            onMusicPlayerClick.onMusicButtonClick("skip")
+                            onMusicPlayerClick.onMusicButtonClick(MusicPlayerOption.Skip)
                         })
                         .padding(16.dp)
                         .size(35.dp)

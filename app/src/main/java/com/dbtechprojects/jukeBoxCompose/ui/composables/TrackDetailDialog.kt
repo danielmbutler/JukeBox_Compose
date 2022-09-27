@@ -1,19 +1,15 @@
 package com.dbtechprojects.jukeBoxCompose.ui.composables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dbtechprojects.jukeBoxCompose.R
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.theme.dialogColor
 
@@ -31,8 +27,8 @@ fun TrackDetailDialog(track: MutableState<Track?>, openDialog: MutableState<Bool
             },
             text = {
                 Column {
-                    Text("Artist " + track.artist)
-                    Text("Track No. " + (track.index + 1))
+                    Text(stringResource(R.string.artist) + track.artist)
+                    Text(stringResource(R.string.trackNo) + (track.index + 1))
                 }
             },
             buttons = {
@@ -44,7 +40,7 @@ fun TrackDetailDialog(track: MutableState<Track?>, openDialog: MutableState<Bool
                         modifier = Modifier.padding(12.dp).fillMaxWidth(),
                         onClick = { openDialog.value = false }
                     ) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             }

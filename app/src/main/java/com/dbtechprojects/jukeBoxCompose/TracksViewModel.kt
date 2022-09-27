@@ -1,6 +1,5 @@
 package com.dbtechprojects.jukeBoxCompose
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,16 +11,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TracksViewModel @Inject constructor(albumRepository: AlbumRepository) : ViewModel() {
+class TracksViewModel @Inject constructor(albumRepository: TrackRepository) : ViewModel() {
 
     private val _trackList = MutableLiveData<List<Track>>()
     val trackList : LiveData<List<Track>> get() = _trackList
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            albumRepository.getAlbums().let {
+            albumRepository.getTracks().let {
                 _trackList.postValue( it.sortedBy { it.index })
-                Log.d("tracks", "${it}")
             }
         }
     }

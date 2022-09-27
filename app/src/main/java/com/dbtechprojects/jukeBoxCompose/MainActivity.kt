@@ -2,7 +2,6 @@ package com.dbtechprojects.jukeBoxCompose
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,6 +13,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import com.dbtechprojects.jukeBoxCompose.model.MusicPlayerOption
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
 import com.dbtechprojects.jukeBoxCompose.ui.Player
@@ -26,17 +26,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-private const val TAG = "MainActivity"
 
-
-//TODO
-// add track details on list item press
-// run through changes outlined Github issue
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), OnMusicButtonClick {
 
     private val isPlaying = mutableStateOf(false) // is music current being played
-    private var trackList =listOf<Track>() // retrieve song list
+    private var trackList = listOf<Track>() // retrieve song list
     private lateinit var currentSong: MutableState<Track>// currently playing song
     private val clickedSong: MutableState<Track?> = mutableStateOf(null)// currently playing song
     private val currentSongIndex = mutableStateOf(-1) // used for recyclerview playing overlay
@@ -47,14 +42,14 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
     private lateinit var listState: LazyListState // current state of album list
     private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
     private lateinit var mediaPlayer: MediaPlayer
-    private  val tracksViewModel: TracksViewModel by viewModels()
+    private val tracksViewModel: TracksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         observeViewModel()
 
         setContent {
-            JukeBoxComposeTheme{
+            JukeBoxComposeTheme {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
@@ -90,7 +85,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
     }
 
 
-    private fun observeViewModel(){
+    private fun observeViewModel() {
         tracksViewModel.trackList.observe(this) { list ->
             if (list.isNotEmpty()) {
                 trackList = list
@@ -127,12 +122,11 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                 mediaPlayer.start()
             }
         } catch (e: Exception) {
-            Log.d("exc", "2")
             e.printStackTrace()
         }
     }
 
-    private fun updateList(){
+    private fun updateList() {
         coroutineScope.launch {
             if (isPlaying.value) {
                 currentSong.value.isPlaying = true
@@ -143,9 +137,9 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
         }
     }
 
-    override fun onMusicButtonClick(command: String) {
+    override fun onMusicButtonClick(command: MusicPlayerOption) {
         when (command) {
-            "skip" -> {
+            MusicPlayerOption.Skip -> {
                 // check list
                 var nextSongIndex = currentSong.value.index + 1 // increment next
                 // if current song is last song in the tracklist (track list starts at 0)
@@ -164,7 +158,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                 }
                 updateList()
             }
-            "previous" -> {
+            MusicPlayerOption.Previous -> {
 
                 var previousSongIndex = currentSong.value.index - 1 // increment previous
                 // if current song is first song in the tracklist (track list starts at 0)
@@ -186,7 +180,7 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
                 updateList()
             }
 
-            "play" -> {
+            MusicPlayerOption.Play -> {
                 currentSong.value.isPlaying =
                     !isPlaying.value // confirms whether current song is played or paused
                 currentSongIndex.value = currentSong.value.index //confirms current song Index
@@ -243,5 +237,5 @@ fun MainContent(
 
 // onMusicPlayerClick
 interface OnMusicButtonClick {
-    fun onMusicButtonClick(command: String)
+    fun onMusicButtonClick(command: MusicPlayerOption)
 }
