@@ -2,9 +2,18 @@ package com.dbtechprojects.jukeBoxCompose.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
-val appBackground = Color.Black
 val turntableBackground = Color(0xFF4FB64C)
+
+sealed class ThemeColors(
+    val background: Color,
+    val surface: Color,
+    val primary: Color,
+    val text: Color
+) {
+    object Night : ThemeColors(
+        background = Color(0xFF0C3C98),
+        surface = Color(0xFF1635D1),
+        primary = Color(0xFF172840),
+        text = Color(0xffffffff)
+    )
+}

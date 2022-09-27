@@ -23,8 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dbtechprojects.jukeBoxCompose.R
 import com.dbtechprojects.jukeBoxCompose.OnMusicButtonClick
+import com.dbtechprojects.jukeBoxCompose.R
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.theme.titleFont
 import com.dbtechprojects.jukeBoxCompose.ui.theme.turntableBackground
@@ -44,7 +44,6 @@ fun Title() {
             Modifier.align(Alignment.CenterHorizontally),
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
             fontFamily = titleFont,
             textAlign = TextAlign.Center
         )
@@ -70,7 +69,6 @@ fun Player(
             Modifier.align(Alignment.CenterHorizontally),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
             fontFamily = titleFont,
             textAlign = TextAlign.Center
         )
@@ -308,7 +306,6 @@ fun ProgressOverlay(
         ) {
 
             CircularProgressIndicator(
-                color = turntableBackground,
                 modifier = Modifier.align(Alignment.Center)
             )
 

@@ -20,8 +20,7 @@ import com.dbtechprojects.jukeBoxCompose.ui.Player
 import com.dbtechprojects.jukeBoxCompose.ui.Title
 import com.dbtechprojects.jukeBoxCompose.ui.TurnTable
 import com.dbtechprojects.jukeBoxCompose.ui.composables.LoadingScreen
-import com.dbtechprojects.jukeBoxCompose.ui.theme.MyApplicationTheme
-import com.dbtechprojects.jukeBoxCompose.ui.theme.appBackground
+import com.dbtechprojects.jukeBoxCompose.ui.theme.JukeBoxComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -49,10 +48,10 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
         observeViewModel()
 
         setContent {
-            MyApplicationTheme {
+            JukeBoxComposeTheme{
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    color = appBackground, modifier = Modifier
+                    modifier = Modifier
                         .fillMaxSize()
                 ) {
                     // should retrieve from viewmodel to keep on rotation
