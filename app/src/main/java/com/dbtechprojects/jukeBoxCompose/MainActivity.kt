@@ -7,14 +7,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dbtechprojects.jukeBoxCompose.model.Track
 import com.dbtechprojects.jukeBoxCompose.ui.AlbumList
@@ -24,13 +24,14 @@ import com.dbtechprojects.jukeBoxCompose.ui.TurnTable
 import com.dbtechprojects.jukeBoxCompose.ui.theme.MyApplicationTheme
 import com.dbtechprojects.jukeBoxCompose.ui.theme.appBackground
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity(), OnMusicButtonClick {
 
     private val isPlaying = mutableStateOf(false) // is music current being played
-    private lateinit var trackList: List<Track> // retrieve song list
+    private var trackList =listOf<Track>() // retrieve song list
     private lateinit var currentSong: MutableState<Track>// currently playing song
     private val currentSongIndex = mutableStateOf(-1) // used for recyclerview playing overlay
     private val turntableArmState = mutableStateOf(false)// turns turntable arm
@@ -40,34 +41,52 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
     private lateinit var listState: LazyListState // current state of album list
     private lateinit var coroutineScope: CoroutineScope // scope to be used in composables
     private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var viewModel: TracksViewModel
+    private lateinit var tracksViewModel: TracksViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     color = appBackground, modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
+                        .fillMaxSize()
                 ) {
                     // should retrieve from viewmodel to keep on rotation
                     listState = rememberLazyListState()
                     coroutineScope = rememberCoroutineScope()
-                    MainContent(
-                        isPlaying = isPlaying,
-                        currentSong,
-                        listState,
-                        onMusicPlayerClick = this@MainActivity,
-                        currentSongIndex,
-                        turntableArmState,
-                        isTurntableArmFinished,
-                        isBuffering = isBuffering,
-                        trackList
-                    )
-                    Log.d(TAG, "onCreate: TrackList : $trackList")
+                    val trackList = remember {trackList}
+                    if (trackList.isNotEmpty()){
+                        MainContent(
+                            isPlaying = isPlaying,
+                            currentSong,
+                            listState,
+                            onMusicPlayerClick = this@MainActivity,
+                            currentSongIndex,
+                            turntableArmState,
+                            isTurntableArmFinished,
+                            isBuffering = isBuffering,
+                            trackList
+                        )
+                        Log.d(TAG, "onCreate: TrackList : $trackList")
+                    } else {
+                        Column(Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                        }
+                    }
+
+
                 }
+            }
+        }
+        observeViewModel()
+    }
+
+    private fun observeViewModel(){
+        tracksViewModel.trackList.observe(this) { list ->
+            if (list.isNotEmpty()) {
+                trackList = list
             }
         }
     }
@@ -105,8 +124,77 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
         }
     }
 
+    private fun updateList(){
+        coroutineScope.launch {
+            if (isPlaying.value) {
+                currentSong.value.isPlaying = true
+            }
+            listState.animateScrollToItem(
+                currentSong.value.index
+            )
+        }
+    }
+
     override fun onMusicButtonClick(command: String) {
-        viewModel.playerBtnClick(command)
+        when (command) {
+            "skip" -> {
+                // check list
+                var nextSongIndex = currentSong.value.index + 1 // increment next
+                // if current song is last song in the tracklist (track list starts at 0)
+                if (currentSong.value.index == trackList.size - 1) {
+                    nextSongIndex = 0 // go back to first song
+                    if (isPlaying.value) {
+                        currentSongIndex.value = 0 // playing song is first song in list
+                    }
+                } else {
+                    currentSongIndex.value++ // increment song index
+                }
+                currentSong.value = trackList[nextSongIndex]
+
+                if (isPlaying.value) {
+                    play()
+                }
+                updateList()
+            }
+            "previous" -> {
+
+                var previousSongIndex = currentSong.value.index - 1 // increment previous
+                // if current song is first song in the tracklist (track list starts at 0)
+                if (currentSong.value.index == 0) {
+                    previousSongIndex = trackList.lastIndex // go to last song in list
+                    if (isPlaying.value) {
+                        currentSongIndex.value =
+                            trackList.lastIndex // last song is now playing song
+                    }
+                } else {
+                    currentSongIndex.value-- // decrement current song
+                }
+                currentSong.value = trackList[previousSongIndex]
+
+                if (isPlaying.value) {
+                    play()
+                }
+
+                updateList()
+            }
+
+            "play" -> {
+                currentSong.value.isPlaying =
+                    !isPlaying.value // confirms whether current song is played or paused
+                currentSongIndex.value = currentSong.value.index //confirms current song Index
+                try {
+                    if (this::mediaPlayer.isInitialized && isPlaying.value) {
+                        mediaPlayer.stop()
+                        mediaPlayer.release()
+                        isPlaying.value = false
+                    } else play()
+                } catch (e: Exception) {
+                    mediaPlayer.release()
+                    isPlaying.value = false
+                }
+            }
+        }
+
     }
 }
 

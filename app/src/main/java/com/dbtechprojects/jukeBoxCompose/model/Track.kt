@@ -1,8 +1,5 @@
 package com.dbtechprojects.jukeBoxCompose.model
-
-import com.dbtechprojects.jukeBoxCompose.ARTIST
-import com.dbtechprojects.jukeBoxCompose.FILENAME
-import com.dbtechprojects.jukeBoxCompose.NAME
+import com.dbtechprojects.jukeBoxCompose.util.Constants
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 data class Track(
@@ -18,9 +15,9 @@ data class Track(
 fun QueryDocumentSnapshot.toTrack(index: Int, imgUrl: String, trackUrl: String): Track {
     return Track(
         img = imgUrl,
-        songTitle = this.getString(NAME) ?: "",
-        artist = this.getString(ARTIST) ?: "",
-        fileName = this.getString(FILENAME) ?: "",
+        songTitle = this.getString(Constants.NAME) ?: "",
+        artist = this.getString(Constants.ARTIST) ?: "",
+        fileName = this.getString(Constants.FILENAME) ?: "",
         isPlaying = false,
         index = index,
         trackUrl = trackUrl
