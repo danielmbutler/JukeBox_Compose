@@ -1,5 +1,6 @@
 package com.dbtechprojects.jukeBoxCompose
 
+import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -91,10 +92,24 @@ class MainActivity : ComponentActivity(), OnMusicButtonClick {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                window.statusBarColor = resources.getColor(R.color.white, null)
+            }
+            else -> {
+                window.statusBarColor = resources.getColor(R.color.black, null)
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.stop()
-        mediaPlayer.release()
+        if (this::mediaPlayer.isInitialized && isPlaying.value) {
+            mediaPlayer.stop()
+            mediaPlayer.release()
+        }
     }
 
     private fun play() {

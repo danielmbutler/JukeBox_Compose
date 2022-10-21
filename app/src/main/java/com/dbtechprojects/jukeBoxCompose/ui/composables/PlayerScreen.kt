@@ -46,7 +46,8 @@ fun Title() {
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = titleFont,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onPrimary
         )
     }
 }
@@ -71,7 +72,8 @@ fun Player(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = titleFont,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onPrimary
         )
 
         Box(Modifier.align(Alignment.CenterHorizontally), contentAlignment = Alignment.Center) {

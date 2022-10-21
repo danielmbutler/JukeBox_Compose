@@ -2,6 +2,7 @@ package com.dbtechprojects.jukeBoxCompose.ui.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ fun LoadingScreen() {
             Text(
                 stringResource(R.string.loadingMsg),
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onPrimary,
                 fontSize = 24.sp
             )
             Spacer(modifier = Modifier.size(12.dp))
